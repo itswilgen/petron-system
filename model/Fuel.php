@@ -5,34 +5,61 @@ class Fuel {
     private $conn;
     private $table = "fuels";
 
-    public function __construct() {
+    public function __construct(?PDO $conn = null) {
+        if ($conn instanceof PDO) {
+            $this->conn = $conn;
+            return;
+        }
+
         $database = new Database();
         $this->conn = $database->getConnection();
     }
 
-    // Get all fuel
-    public function getAllFuel() {
-        $query = "SELECT * FROM " . $this->table . " ORDER BY id ASC";
+    public function getConnection() {
+        return $this->conn;
+    }
+
+    // Get all fuel by branch
+    public function getAllFuel($branch_id) {
+        $query = "SELECT * FROM {$this->table} WHERE branch_id = ? ORDER BY id ASC";
         $stmt = $this->conn->prepare($query);
-        $stmt->execute();
+        $stmt->execute([$branch_id]);
         return $stmt;
     }
 
-    // Update liters (for delivery or edit)
-    public function updateFuel($id, $liters, $price, $status) {
-        $query = "UPDATE " . $this->table . " 
-                  SET liters=?, price=?, status=? 
-                  WHERE id=?";
+    // Update fuel by id + branch
+    public function updateFuel($id, $liters, $price, $status, $branch_id) {
+        $query = "UPDATE {$this->table}
+                SET liters = ?, price = ?, status = ?
+                WHERE id = ? AND branch_id = ?";
         $stmt = $this->conn->prepare($query);
-        return $stmt->execute([$liters, $price, $status, $id]);
+        $stmt->execute([$liters, $price, $status, $id, $branch_id]);
+        return $stmt->rowCount();
     }
 
-    // Get single fuel
-    public function getFuelById($id){
-        $query = "SELECT * FROM " . $this->table . " WHERE id=?";
+    // Get single fuel by id + branch
+    public function getFuelById($id, $branch_id) {
+        $query = "SELECT * FROM {$this->table} WHERE id = ? AND branch_id = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->execute([$id]);
+        $stmt->execute([$id, $branch_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Get low stock by branch
+    public function getLowStock($branch_id, $threshold = 0.30) {
+        $stmt = $this->conn->prepare("
+            SELECT fuel_name, liters, capacity
+            FROM {$this->table}
+            WHERE branch_id = :branch_id
+              AND capacity > 0
+              AND (liters / capacity) <= :threshold
+        ");
+
+        $stmt->bindValue(':branch_id', $branch_id, PDO::PARAM_INT);
+        $stmt->bindValue(':threshold', $threshold);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>
