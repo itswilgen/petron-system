@@ -20,7 +20,7 @@ class Sale {
         return $this->conn;
     }
 
-    // Create sale
+    // Create sale and return inserted sale id
     public function createSale($fuel_id, $liters, $price, $total, $branch_id){
 
         $query = "INSERT INTO {$this->table} 
@@ -29,13 +29,34 @@ class Sale {
 
         $stmt = $this->conn->prepare($query);
 
-        return $stmt->execute([
+        $ok = $stmt->execute([
             $fuel_id,
             $liters,
             $price,
             $total,
             $branch_id
         ]);
+
+        if (!$ok) {
+            return false;
+        }
+
+        return (int)$this->conn->lastInsertId();
+    }
+
+    // Get one sale row for receipt printing
+    public function getSaleById($sale_id, $branch_id) {
+        $query = "
+            SELECT s.id, s.liters, s.price, s.total_price, s.sale_date, f.fuel_name
+            FROM {$this->table} s
+            JOIN fuels f ON s.fuel_id = f.id
+            WHERE s.id = ? AND s.branch_id = ?
+            LIMIT 1
+        ";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([(int)$sale_id, (int)$branch_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     // Count sales for pagination
@@ -78,7 +99,7 @@ class Sale {
         $offset = (int)$offset;
 
         $sql = "
-            SELECT s.id, s.liters, s.price, s.total_price, s.sale_date, f.fuel_name
+            SELECT s.liters, s.price, s.total_price, s.sale_date, f.fuel_name
             FROM sales s
             JOIN fuels f ON s.fuel_id = f.id
             WHERE s.branch_id = ?

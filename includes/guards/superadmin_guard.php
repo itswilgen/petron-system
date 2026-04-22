@@ -1,9 +1,15 @@
 <?php
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'super_admin') {
+require_once __DIR__ . '/../auth_roles.php';
+
+$role = $_SESSION['role'] ?? '';
+
+if (!canAccessSuperAdminArea($role)) {
     header("Location: /petron_system/public/auth/login.php");
     exit;
 }
+

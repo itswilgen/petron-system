@@ -19,6 +19,8 @@
     "build": "tailwindcss -i ./src/assets/css/input.css -o ./public/assets/css/output.css --minify"
   },
   "dependencies": {
+    "apexcharts": "^5.10.6",
+    "chart.js": "^4.5.1",
     "flowbite": "^4.0.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"

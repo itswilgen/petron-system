@@ -4,12 +4,13 @@ ob_start();
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 define('ROOT_PATH', dirname(__DIR__, 2));
+require_once __DIR__ . '/../../includes/auth_roles.php';
 
 $role = $_SESSION['role'] ?? '';
 $page = $_GET['page'] ?? 'dashboard';
 $allowedPages = ['dashboard', 'inventory', 'delivery', 'delivery_history', 'staff_manage'];
 
-if ($role !== 'admin') {
+if (!canAccessAdminArea($role)) {
     header("Location: /petron_system/public/auth/login.php");
     exit;
 }

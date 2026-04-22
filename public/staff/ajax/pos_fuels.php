@@ -4,11 +4,12 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../../../model/Fuel.php';
+require_once __DIR__ . '/../../../includes/auth_roles.php';
 
 header('Content-Type: application/json');
 
 $role = $_SESSION['role'] ?? '';
-if ($role !== 'staff' && $role !== 'admin') {
+if (!canAccessStaffArea($role)) {
     http_response_code(401);
     echo json_encode([
         'success' => false,

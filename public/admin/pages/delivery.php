@@ -120,7 +120,6 @@ $hasMore      = $viewData['hasMore'];
       <table class="w-full text-left min-w-175">
         <thead class="bg-gray-50 text-xs uppercase font-extrabold text-gray-600 border-b">
           <tr>
-            <th class="px-6 py-4 w-24">#</th>
             <th class="px-6 py-4">Fuel Type</th>
             <th class="px-6 py-4">Liters Added</th>
             <th class="px-6 py-4">Date</th>
@@ -131,9 +130,6 @@ $hasMore      = $viewData['hasMore'];
           <?php if(count($deliveries) > 0): ?>
             <?php foreach($deliveries as $d): ?>
               <tr class="hover:bg-gray-50 transition">
-                <td class="px-6 py-4 font-extrabold text-gray-700">
-                  <?= (int)$d['id'] ?>
-                </td>
                 <td class="px-6 py-4 font-bold text-petron-blue">
                   <?= htmlspecialchars($d['fuel_name']) ?>
                 </td>

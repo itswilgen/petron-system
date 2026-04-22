@@ -98,7 +98,6 @@ $dateTo = $viewData['dateTo'];
             <table class="w-full text-left min-w-200">
                 <thead class="bg-gray-50 text-xs uppercase font-extrabold text-gray-600 border-b">
                     <tr>
-                        <th class="px-6 py-4 w-24">#</th>
                         <th class="px-6 py-4">Fuel Type</th>
                         <th class="px-6 py-4">Liters</th>
                         <th class="px-6 py-4">Total Price</th>
@@ -110,9 +109,6 @@ $dateTo = $viewData['dateTo'];
                     <?php if(count($rows) > 0): ?>
                         <?php foreach($rows as $sale): ?>
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 font-extrabold text-gray-700">
-                                    <?= (int)$sale['id'] ?>
-                                </td>
                                 <td class="px-6 py-4 font-bold text-petron-blue">
                                     <?= htmlspecialchars($sale['fuel_name']) ?>
                                 </td>
@@ -129,7 +125,7 @@ $dateTo = $viewData['dateTo'];
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-gray-400 italic">
+                            <td colspan="4" class="px-6 py-10 text-center text-gray-400 italic">
                                 No sales records found.
                             </td>
                         </tr>

@@ -150,5 +150,5 @@ window.reportsData = {
     monthlySales: <?= json_encode($monthlySales) ?>
 };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/petron_system/public/assets/vendor/chartjs/chart.umd.min.js?v=<?= filemtime(__DIR__ . '/../../assets/vendor/chartjs/chart.umd.min.js') ?>"></script>
 <script src="/petron_system/public/assets/js/reports_staff.js"></script>

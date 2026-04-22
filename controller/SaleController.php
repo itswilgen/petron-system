@@ -8,23 +8,41 @@ class SaleController {
         return '/petron_system/public/staff/app.php?page=pos';
     }
 
-    private function performSale($fuel_id, $liters, $branchId) {
-        if ($fuel_id <= 0 || $liters <= 0 || $branchId <= 0) {
+    private function performSale($fuel_id, $liters, $branchId, $fuelName = '') {
+        if ($liters <= 0) {
             return [
                 'success' => false,
-                'message' => 'Invalid sale data.'
+                'message' => 'Please enter liters greater than 0.'
+            ];
+        }
+
+        if ($branchId <= 0) {
+            return [
+                'success' => false,
+                'message' => 'Session branch is missing. Please logout and login again.'
             ];
         }
 
         $fuelModel = new Fuel();
-        $fuel = $fuelModel->getFuelById($fuel_id, $branchId);
+        $fuel = null;
 
-        if (!$fuel) {
+        if ($fuel_id > 0) {
+            $fuel = $fuelModel->getFuelById($fuel_id, $branchId);
+        }
+
+        // Fallback for stale forms where fuel id may be missing after option refresh.
+        if (!$fuel && trim((string)$fuelName) !== '') {
+            $fuel = $fuelModel->getFuelByName(trim((string)$fuelName), $branchId);
+        }
+
+        if (!$fuel || (int)($fuel['id'] ?? 0) <= 0) {
             return [
                 'success' => false,
-                'message' => 'Fuel not found for this branch.'
+                'message' => 'Please select a valid fuel product.'
             ];
         }
+
+        $fuel_id = (int)$fuel['id'];
 
         if ((float)$fuel['liters'] < $liters) {
             return [
@@ -42,20 +60,35 @@ class SaleController {
         try {
             $conn->beginTransaction();
 
-            $saleOk = $sale->createSale($fuel_id, $liters, $price, $total, $branchId);
+            $saleId = $sale->createSale($fuel_id, $liters, $price, $total, $branchId);
             $updateOk = $fuelModel->updateFuel($fuel_id, $newLiters, $price, $fuel['status'], $branchId);
 
-            if (!$saleOk || !$updateOk) {
+            if (!$saleId || !$updateOk) {
                 throw new RuntimeException('Sale could not be saved.');
             }
 
             $conn->commit();
 
+            $savedSale = $sale->getSaleById($saleId, $branchId);
+            $cashier = trim((string)($_SESSION['username'] ?? ''));
+            $branchName = trim((string)($_SESSION['branch_name'] ?? ''));
+
             return [
                 'success' => true,
                 'message' => 'Sale successful!',
                 'new_liters' => $newLiters,
-                'fuel_id' => $fuel_id
+                'fuel_id' => $fuel_id,
+                'receipt' => [
+                    'sale_id' => (int)$saleId,
+                    'reference' => 'TXN-' . str_pad((string)$saleId, 6, '0', STR_PAD_LEFT),
+                    'sale_date' => $savedSale['sale_date'] ?? date('Y-m-d H:i:s'),
+                    'fuel_name' => $savedSale['fuel_name'] ?? $fuel['fuel_name'],
+                    'liters' => isset($savedSale['liters']) ? (float)$savedSale['liters'] : (float)$liters,
+                    'price' => isset($savedSale['price']) ? (float)$savedSale['price'] : $price,
+                    'total_price' => isset($savedSale['total_price']) ? (float)$savedSale['total_price'] : $total,
+                    'cashier' => $cashier !== '' ? $cashier : 'Staff',
+                    'branch_name' => $branchName !== '' ? $branchName : ('Branch #' . (int)$branchId)
+                ]
             ];
         } catch (PDOException $e) {
             if ($conn->inTransaction()) {
@@ -92,7 +125,8 @@ class SaleController {
         $result = $this->performSale(
             (int)($_POST['fuel_id'] ?? 0),
             (float)($_POST['liters'] ?? 0),
-            (int)($_SESSION['branch_id'] ?? 0)
+            (int)($_SESSION['branch_id'] ?? 0),
+            trim((string)($_POST['fuel_name'] ?? ''))
         );
 
         $redirect = $this->posRedirect();
@@ -134,7 +168,8 @@ class SaleController {
         return $this->performSale(
             (int)($_POST['fuel_id'] ?? 0),
             (float)($_POST['liters'] ?? 0),
-            (int)($_SESSION['branch_id'] ?? 0)
+            (int)($_SESSION['branch_id'] ?? 0),
+            trim((string)($_POST['fuel_name'] ?? ''))
         );
     }
 

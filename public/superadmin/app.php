@@ -1,9 +1,15 @@
 <?php
+
+ob_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../../includes/guards/superadmin_guard.php';
 
 $page = $_GET['page'] ?? 'dashboard';
-
-$allowedPages = ['dashboard'];
+$allowedPages = ['dashboard', 'branch_operations', 'business_health', 'global_pricing', 'admin_accounts'];
 
 if (!in_array($page, $allowedPages, true)) {
     $page = 'dashboard';
@@ -14,29 +20,88 @@ if (!in_array($page, $allowedPages, true)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Panel</title>
-    <link rel="stylesheet" href="/petron_system/public/assets/css/output.css">
+    <title>Petron Super Admin Panel</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/petron_system/public/assets/css/output.css?v=<?= filemtime(__DIR__ . '/../assets/css/output.css') ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <div class="flex min-h-screen">
-        <aside class="w-64 bg-petron-blue text-white p-6">
-            <h2 class="text-xl font-bold mb-6">Super Admin</h2>
+<body class="bg-[#f8f9fc] antialiased">
 
-            <nav class="space-y-3">
-                <a href="app.php?page=dashboard" class="block px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20">
-                    <i class="fa-solid fa-gauge-high mr-2"></i> Dashboard
+<div class="flex h-screen overflow-hidden">
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-petron-blue text-white -translate-x-full lg:translate-x-0">
+        <div class="p-6 text-center border-b border-white/10">
+            <img src="../assets/img/logo3.png" alt="Petron" class="h-12 w-auto mx-auto object-contain mb-2">
+            <p class="text-[10px] uppercase tracking-widest opacity-70">Super Admin Panel</p>
+        </div>
+
+        <?php
+            $currentPage = $page;
+            function getSuperAdminActiveClass($pageName, $currentPage) {
+                if ($pageName === $currentPage) {
+                    return "bg-white/20 border-l-4 border-petron-red text-white shadow-md";
+                }
+                return "hover:bg-white/10 text-white/80 hover:text-white";
+            }
+        ?>
+
+        <nav class="mt-4 px-4 space-y-2">
+            <a href="app.php?page=dashboard" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('dashboard', $currentPage) ?>">
+                <i class="fa-solid fa-chart-pie w-6"></i>
+                <span class="ml-2">Global Dashboard</span>
+            </a>
+
+            <a href="app.php?page=branch_operations" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('branch_operations', $currentPage) ?>">
+                <i class="fa-solid fa-network-wired w-6"></i>
+                <span class="ml-2">Branch Operations</span>
+            </a>
+
+            <a href="app.php?page=business_health" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('business_health', $currentPage) ?>">
+                <i class="fa-solid fa-heart-pulse w-6"></i>
+                <span class="ml-2">Business Health</span>
+            </a>
+
+            <a href="app.php?page=global_pricing" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('global_pricing', $currentPage) ?>">
+                <i class="fa-solid fa-tags w-6"></i>
+                <span class="ml-2">Global Pricing</span>
+            </a>
+
+            <a href="app.php?page=admin_accounts" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('admin_accounts', $currentPage) ?>">
+                <i class="fa-solid fa-user-shield w-6"></i>
+                <span class="ml-2">Admin Accounts</span>
+            </a>
+
+            <div class="pt-4 mt-4 border-t border-white/10">
+                <a href="../auth/logout.php" class="flex items-center px-4 py-3 text-red-300 hover:text-red-200 font-bold transition-all">
+                    <i class="fa-solid fa-right-from-bracket w-6"></i>
+                    <span class="ml-2">Logout</span>
                 </a>
+            </div>
+        </nav>
+    </aside>
 
-                <a href="/petron_system/public/auth/logout.php" class="block px-4 py-3 rounded-lg text-red-300 hover:text-red-200">
-                    <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
-                </a>
-            </nav>
-        </aside>
-
-        <main class="flex-1">
-            <?php include __DIR__ . "/pages/{$page}.php"; ?>
-        </main>
+    <div class="lg:hidden bg-petron-blue p-4 flex justify-between items-center shadow-lg w-full fixed top-0 left-0 z-30">
+        <img src="../assets/img/logo3.png" alt="Petron" class="h-8 w-auto">
+        <button id="sidebarToggle" type="button" class="text-white text-2xl">
+            <i class="fa-solid fa-bars"></i>
+        </button>
     </div>
+
+    <div id="sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-black/40 backdrop-blur-sm lg:hidden"></div>
+
+    <main class="flex-1 w-full min-h-screen overflow-hidden">
+        <div class="h-full overflow-y-auto pt-16 lg:pt-0">
+            <?php include __DIR__ . "/pages/{$page}.php"; ?>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+<script src="/petron_system/public/assets/js/app_superadmin.js"></script>
 </body>
 </html>

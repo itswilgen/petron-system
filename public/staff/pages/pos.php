@@ -64,29 +64,31 @@ $dateTo = $viewData['dateTo'];
                     </div>
 
                     <div class="mb-5">
-                        <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Liters</label>
-                        <input type="number" step="0.01" name="liters" id="liters"
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Amount (PHP)</label>
+                        <input type="number" step="0.01" min="0.01" name="amount" id="amount"
                                class="w-full rounded-xl border border-gray-200 px-4 py-3 text-lg font-black focus:outline-none focus:ring-2 focus:ring-blue-200"
                                placeholder="0.00" required>
+                        <input type="hidden" name="liters" id="liters" value="">
+                        <p class="mt-2 text-sm text-gray-500 font-semibold">Liters are auto-calculated from amount and fuel price.</p>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Quick Presets</label>
+                        <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Quick Amount Presets</label>
                         <div class="grid grid-cols-3 gap-3">
                             <button type="button"
                                     class="py-3 rounded-xl border border-gray-200 font-black hover:bg-gray-50 transition"
-                                    onclick="setLiters(10)">
-                                10L
+                                    onclick="setAmount(100)">
+                                ₱100
                             </button>
                             <button type="button"
                                     class="py-3 rounded-xl border border-gray-200 font-black hover:bg-gray-50 transition"
-                                    onclick="setLiters(20)">
-                                20L
+                                    onclick="setAmount(500)">
+                                ₱500
                             </button>
                             <button type="button"
                                     class="py-3 rounded-xl border border-gray-200 font-black hover:bg-gray-50 transition"
-                                    onclick="setLiters(50)">
-                                50L
+                                    onclick="setAmount(1000)">
+                                ₱1000
                             </button>
                         </div>
                     </div>
@@ -108,6 +110,10 @@ $dateTo = $viewData['dateTo'];
                             <span class="text-gray-600">Quantity:</span>
                             <span id="sum-liters" class="font-extrabold text-gray-900">0.00 L</span>
                         </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Amount:</span>
+                            <span id="sum-amount" class="font-extrabold text-gray-900">₱ 0.00</span>
+                        </div>
                     </div>
 
                     <div class="text-center bg-gray-50 rounded-2xl p-6 border border-gray-100 mb-6">
@@ -117,10 +123,16 @@ $dateTo = $viewData['dateTo'];
                         </div>
                     </div>
 
-                    <button type="submit" name="pay"
-                            class="mt-auto w-full py-4 rounded-2xl bg-red-600 text-white font-black hover:bg-red-700 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-receipt"></i> COMPLETE TRANSACTION
-                    </button>
+                    <div class="mt-auto space-y-3">
+                        <button type="submit" name="pay"
+                                class="w-full py-4 rounded-2xl bg-red-600 text-white font-black hover:bg-red-700 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-receipt"></i> COMPLETE TRANSACTION
+                        </button>
+                        <button type="button" id="printReceiptBtn" disabled
+                                class="w-full py-3 rounded-2xl border border-gray-200 text-gray-400 font-black bg-white cursor-not-allowed transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-print"></i> PRINT LAST RECEIPT
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -137,7 +149,6 @@ $dateTo = $viewData['dateTo'];
             <table class="w-full text-left min-w-200">
                 <thead class="bg-gray-50 text-xs uppercase font-extrabold text-gray-600 border-b">
                     <tr>
-                        <th class="px-6 py-4 w-24">#</th>
                         <th class="px-6 py-4">Fuel Type</th>
                         <th class="px-6 py-4">Liters</th>
                         <th class="px-6 py-4">Total Price</th>
@@ -148,9 +159,6 @@ $dateTo = $viewData['dateTo'];
                     <?php if(count($rows) > 0): ?>
                         <?php foreach($rows as $sale): ?>
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 font-extrabold text-gray-700">
-                                    #<?= (int)$sale['id'] ?>
-                                </td>
                                 <td class="px-6 py-4 font-bold text-petron-blue">
                                     <?= htmlspecialchars($sale['fuel_name']) ?>
                                 </td>
@@ -167,7 +175,7 @@ $dateTo = $viewData['dateTo'];
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-gray-400 italic">
+                            <td colspan="4" class="px-6 py-10 text-center text-gray-400 italic">
                                 No sales records found.
                             </td>
                         </tr>
@@ -179,4 +187,4 @@ $dateTo = $viewData['dateTo'];
 
 </div>
 
-<script src="/petron_system/public/assets/js/pos.js"></script>
+<script src="/petron_system/public/assets/js/pos.js?v=<?= filemtime(__DIR__ . '/../../assets/js/pos.js') ?>"></script>
