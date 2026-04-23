@@ -34,7 +34,7 @@ if (!in_array($page, $allowedPages, true)) {
 <body class="bg-[#f8f9fc] antialiased">
 
 <div class="flex h-screen overflow-hidden">
-    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-petron-blue text-white -translate-x-full lg:translate-x-0">
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-petron-blue text-white -translate-x-full lg:translate-x-0 flex flex-col">
         <div class="p-6 text-center border-b border-white/10">
             <img src="../assets/img/logo3.png" alt="Petron" class="h-12 w-auto mx-auto object-contain mb-2">
             <p class="text-[10px] uppercase tracking-widest opacity-70">Super Admin Panel</p>
@@ -50,39 +50,49 @@ if (!in_array($page, $allowedPages, true)) {
             }
         ?>
 
-        <nav class="mt-4 px-4 space-y-2">
-            <a href="app.php?page=dashboard" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('dashboard', $currentPage) ?>">
-                <i class="fa-solid fa-chart-pie w-6"></i>
-                <span class="ml-2">Global Dashboard</span>
-            </a>
+        <nav class="mt-4 px-4 flex-1 overflow-y-auto flex flex-col">
+            <div class="space-y-2">
+                <a href="app.php?page=dashboard" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('dashboard', $currentPage) ?>">
+                    <i class="fa-solid fa-chart-pie w-6"></i>
+                    <span class="ml-2">Global Dashboard</span>
+                </a>
 
-            <a href="app.php?page=branch_operations" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('branch_operations', $currentPage) ?>">
-                <i class="fa-solid fa-network-wired w-6"></i>
-                <span class="ml-2">Branch Operations</span>
-            </a>
+                <a href="app.php?page=branch_operations" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('branch_operations', $currentPage) ?>">
+                    <i class="fa-solid fa-network-wired w-6"></i>
+                    <span class="ml-2">Branch Operations</span>
+                </a>
 
-            <a href="app.php?page=business_health" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('business_health', $currentPage) ?>">
-                <i class="fa-solid fa-heart-pulse w-6"></i>
-                <span class="ml-2">Business Health</span>
-            </a>
+                <a href="app.php?page=business_health" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('business_health', $currentPage) ?>">
+                    <i class="fa-solid fa-heart-pulse w-6"></i>
+                    <span class="ml-2">Business Health</span>
+                </a>
 
-            <a href="app.php?page=global_pricing" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('global_pricing', $currentPage) ?>">
-                <i class="fa-solid fa-tags w-6"></i>
-                <span class="ml-2">Global Pricing</span>
-            </a>
+                <a href="app.php?page=global_pricing" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('global_pricing', $currentPage) ?>">
+                    <i class="fa-solid fa-tags w-6"></i>
+                    <span class="ml-2">Global Pricing</span>
+                </a>
 
-            <a href="app.php?page=admin_accounts" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('admin_accounts', $currentPage) ?>">
-                <i class="fa-solid fa-user-shield w-6"></i>
-                <span class="ml-2">Admin Accounts</span>
-            </a>
+                <a href="app.php?page=admin_accounts" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('admin_accounts', $currentPage) ?>">
+                    <i class="fa-solid fa-user-shield w-6"></i>
+                    <span class="ml-2">Admin Accounts</span>
+                </a>
+            </div>
 
-            <div class="pt-4 mt-4 border-t border-white/10">
+            <div class="pt-4 mt-4 border-t border-white/10 mt-auto">
                 <a href="../auth/logout.php" class="flex items-center px-4 py-3 text-red-300 hover:text-red-200 font-bold transition-all">
                     <i class="fa-solid fa-right-from-bracket w-6"></i>
                     <span class="ml-2">Logout</span>
                 </a>
             </div>
         </nav>
+
+        <div class="mx-4 mb-4 mt-3 rounded-xl border border-white/15 bg-white/10 p-3 text-[11px] leading-5">
+            <div class="flex items-center gap-2 font-extrabold text-white">
+                <i class="fa-solid fa-satellite-dish text-petron-red"></i>
+                Regional Command Node
+            </div>
+            <p class="mt-1 text-white/75">Super Admin operations control across all branches.</p>
+        </div>
     </aside>
 
     <div class="lg:hidden bg-petron-blue p-4 flex justify-between items-center shadow-lg w-full fixed top-0 left-0 z-30">

@@ -43,7 +43,7 @@ if (!in_array($page, $allowedPages, true)) {
 
 
     <aside id="sidebar"
-            class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-petron-blue text-white">
+            class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-petron-blue text-white flex flex-col">
 
         <div class="p-6 text-center">
             <div class=" p-2 rounded-lg mb-2">
@@ -53,9 +53,9 @@ if (!in_array($page, $allowedPages, true)) {
         </div>
         
             
-        <nav class="mt-4 px-4 space-y-2">
+        <nav class="mt-4 px-4 flex-1 overflow-y-auto flex flex-col">
             <?php
-            $currentPage = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
+            $currentPage = $page;
 
             function getActiveClass($pageName, $currentPage) {
                 if ($pageName === $currentPage) {
@@ -66,33 +66,43 @@ if (!in_array($page, $allowedPages, true)) {
             }
             ?>
 
-            <a href="app.php?page=dashboard" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getActiveClass('dashboard', $currentPage) ?>">
-                <i class="fa-solid fa-gauge-high w-6"></i>
-                <span class="ml-2 font-semibold">Dashboard</span>
-            </a>
+            <div class="space-y-2">
+                <a href="app.php?page=dashboard" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getActiveClass('dashboard', $currentPage) ?>">
+                    <i class="fa-solid fa-gauge-high w-6"></i>
+                    <span class="ml-2 font-semibold">Dashboard</span>
+                </a>
 
-            <a href="app.php?page=pos" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getActiveClass('pos', $currentPage) ?>">
-                <i class="fa-solid fa-gas-pump w-6"></i>
-                <span class="ml-2">POS</span>
-            </a>
+                <a href="app.php?page=pos" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getActiveClass('pos', $currentPage) ?>">
+                    <i class="fa-solid fa-gas-pump w-6"></i>
+                    <span class="ml-2">POS</span>
+                </a>
 
-            <a href="app.php?page=reports" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getActiveClass('reports', $currentPage) ?>">
-                <i class="fa-solid fa-chart-line w-6"></i>
-                <span class="ml-2">Sales Reports</span>
-            </a>
+                <a href="app.php?page=reports" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getActiveClass('reports', $currentPage) ?>">
+                    <i class="fa-solid fa-chart-line w-6"></i>
+                    <span class="ml-2">Sales Reports</span>
+                </a>
 
-            <a href="app.php?page=sales_history" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getActiveClass('sales_history', $currentPage) ?>">
-                <i class="fa-solid fa-receipt w-6"></i>
-                <span class="ml-2">Sales History</span>
-            </a>
+                <a href="app.php?page=sales_history" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getActiveClass('sales_history', $currentPage) ?>">
+                    <i class="fa-solid fa-receipt w-6"></i>
+                    <span class="ml-2">Sales History</span>
+                </a>
+            </div>
 
-            <div class="pt-4 mt-4 border-t border-white/10">
+            <div class="pt-4 mt-4 border-t border-white/10 mt-auto">
                 <a href="../auth/logout.php" class="flex items-center px-4 py-3 text-red-300 hover:text-red-200 font-bold transition-all">
                     <i class="fa-solid fa-right-from-bracket w-6"></i>
                     <span class="ml-2">Logout</span>
                 </a>
             </div>
         </nav>
+
+        <div class="mx-4 mb-4 mt-3 rounded-xl border border-white/15 bg-white/10 p-3 text-[11px] leading-5">
+            <div class="flex items-center gap-2 font-extrabold text-white">
+                <i class="fa-solid fa-bolt text-petron-red"></i>
+                Pump Floor Console
+            </div>
+            <p class="mt-1 text-white/75">Staff workspace for real-time sales, POS actions, and service flow.</p>
+        </div>
     </aside>
 
 
@@ -116,8 +126,4 @@ if (!in_array($page, $allowedPages, true)) {
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
-<script src="/petron_system/public/assets/js/app_staff.js"></script>
-
-</body>
-</html>
+<?php include __DIR__ . '/../../includes/footer.php'; ?>

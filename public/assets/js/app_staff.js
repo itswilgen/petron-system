@@ -2,19 +2,25 @@
 const sidebar = document.getElementById("sidebar");
 const backdrop = document.getElementById("sidebar-backdrop");
 const toggleBtn = document.getElementById("sidebarToggle");
+const profileModal = document.querySelector("[data-profile-modal]");
+const profileTriggers = document.querySelectorAll("[data-profile-trigger]");
+const profileCloseButtons = document.querySelectorAll("[data-profile-close]");
+const profileOverlay = profileModal?.querySelector("[data-profile-overlay]");
 
 function openSidebar() {
-  sidebar.classList.remove("-translate-x-full");
-  backdrop.classList.remove("hidden");
+  sidebar?.classList.remove("-translate-x-full");
+  backdrop?.classList.remove("hidden");
 }
 
 function closeSidebar() {
-  sidebar.classList.add("-translate-x-full");
-  backdrop.classList.add("hidden");
+  sidebar?.classList.add("-translate-x-full");
+  backdrop?.classList.add("hidden");
 }
 
 // Sync sidebar state on window resize
 function syncSidebar() {
+  if (!sidebar || !backdrop) return;
+
   if (window.innerWidth >= 1024) {
     sidebar.classList.remove("-translate-x-full");
     backdrop.classList.add("hidden");
@@ -27,14 +33,55 @@ window.addEventListener("resize", syncSidebar);
 syncSidebar();
 
 toggleBtn?.addEventListener("click", () => {
+  if (!sidebar) return;
   const isClosed = sidebar.classList.contains("-translate-x-full");
   isClosed ? openSidebar() : closeSidebar();
 });
 
 backdrop?.addEventListener("click", closeSidebar);
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeSidebar();
+
+function openProfileModal() {
+  if (!profileModal) return;
+  profileModal.classList.remove("hidden");
+  profileModal.classList.add("flex");
+  document.body.classList.add("overflow-hidden");
+  closeSidebar();
+}
+
+function closeProfileModal() {
+  if (!profileModal) return;
+  profileModal.classList.add("hidden");
+  profileModal.classList.remove("flex");
+  document.body.classList.remove("overflow-hidden");
+}
+
+profileTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    openProfileModal();
+  });
 });
+
+profileCloseButtons.forEach((button) => {
+  button.addEventListener("click", closeProfileModal);
+});
+
+profileOverlay?.addEventListener("click", closeProfileModal);
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+
+  if (profileModal && !profileModal.classList.contains("hidden")) {
+    closeProfileModal();
+    return;
+  }
+
+  closeSidebar();
+});
+
+if (profileModal?.dataset.openOnload === "1") {
+  openProfileModal();
+}
 
 
 
@@ -69,6 +116,9 @@ function updateBadgeColor(select, id) {
 
     //live date script
 function updateDate() {
+    const liveDate = document.getElementById("live-date");
+    if (!liveDate) return;
+
     const now = new Date();
 
     const options = {
@@ -77,8 +127,7 @@ function updateDate() {
         day: 'numeric'
     };
 
-    document.getElementById("live-date").textContent =
-        now.toLocaleDateString('en-US', options);
+    liveDate.textContent = now.toLocaleDateString('en-US', options);
 }
 
     updateDate();
