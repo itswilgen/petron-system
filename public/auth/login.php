@@ -88,21 +88,22 @@ $error = $controller->login();
 
             <form method="POST" action="" class="mt-6 space-y-4">
 
-              <!-- Username -->
+              <!-- ID Number -->
               <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">Username</label>
+                <label class="block text-sm font-bold text-gray-700 mb-2">ID Number</label>
                 <div class="flex items-center rounded-lg border border-gray-300 bg-gray-200 overflow-hidden">
                   <div class="w-12 h-12 flex items-center justify-center text-gray-700">
-                    <i class="fa-solid fa-user"></i>
+                    <i class="fa-solid fa-id-card"></i>
                   </div>
                   <input
                     type="text"
-                    name="username"
+                    name="id_number"
                     required
-                    placeholder="Enter username"
+                    placeholder="Enter ID number (e.g., ADM-000037, STF-000044, or 37)"
                     class="w-full bg-gray-200 px-3 py-3 text-sm border-0 outline-none focus:ring-0 focus:outline-none placeholder:text-gray-500"    
                   />
                 </div>
+                <p class="mt-2 text-xs text-gray-500">Use your account ID number (Admin or Staff), not username.</p>
               </div>
 
 

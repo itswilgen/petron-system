@@ -28,7 +28,12 @@ $staffUsers = $controller->listStaff();
 
   <?php if(isset($_GET['created'])): ?>
     <div class="bg-emerald-100 border border-emerald-300 text-emerald-800 px-6 py-4 rounded-xl shadow flex justify-between items-center">
-      <span class="font-bold">Account created successfully.</span>
+      <span class="font-bold">
+        Account created successfully.
+        <?php if (!empty($_GET['staff_uid'])): ?>
+          ID: <?= htmlspecialchars((string)$_GET['staff_uid']) ?>
+        <?php endif; ?>
+      </span>
       <button onclick="this.parentElement.remove()" class="font-bold text-lg">&times;</button>
     </div>
   <?php endif; ?>
@@ -111,7 +116,7 @@ $staffUsers = $controller->listStaff();
       <table class="w-full text-left min-w-175">
         <thead class="bg-gray-50 text-xs uppercase font-extrabold text-gray-600 border-b">
           <tr>
-            <th class="px-6 py-4 w-24">ID</th>
+            <th class="px-6 py-4 w-32">Staff ID</th>
             <th class="px-6 py-4">Username</th>
             <th class="px-6 py-4">Role</th>
             <th class="px-6 py-4 w-40 text-center">Action</th>
@@ -122,8 +127,11 @@ $staffUsers = $controller->listStaff();
           <?php if(count($staffUsers) > 0): ?>
             <?php foreach($staffUsers as $s): ?>
               <tr class="hover:bg-gray-50 transition">
-                <td class="px-6 py-4 font-extrabold text-gray-700">
-                  <?= (int)$s['id'] ?>
+                <td class="px-6 py-4">
+                  <span class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 font-black text-xs tracking-wide text-gray-700">
+                    <i class="fa-solid fa-id-card text-petron-blue"></i>
+                    <?= htmlspecialchars((string)($s['staff_uid'] ?? ('STF-' . str_pad((string)((int)$s['id']), 6, '0', STR_PAD_LEFT)))) ?>
+                  </span>
                 </td>
                 <td class="px-6 py-4 font-bold text-gray-900">
                   <?= htmlspecialchars($s['username']) ?>

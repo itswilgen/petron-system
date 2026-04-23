@@ -24,7 +24,12 @@ $admins = $controller->getAdmins();
 <div class="p-4 md:p-8 space-y-6">
     <?php if (isset($_GET['created'])): ?>
         <div class="bg-emerald-100 border border-emerald-300 text-emerald-800 px-6 py-4 rounded-xl shadow flex justify-between items-center">
-            <span class="font-bold">Admin account created successfully.</span>
+            <span class="font-bold">
+                Admin account created successfully.
+                <?php if (!empty($_GET['admin_uid'])): ?>
+                    ID: <?= htmlspecialchars((string)$_GET['admin_uid']) ?>
+                <?php endif; ?>
+            </span>
             <button onclick="this.parentElement.remove()" class="font-bold text-lg">&times;</button>
         </div>
     <?php endif; ?>
@@ -107,16 +112,22 @@ $admins = $controller->getAdmins();
     </div>
 
     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
-            <i class="fa-solid fa-users-gear text-petron-red"></i>
-            <h5 class="font-bold text-gray-800">Admin Accounts by Branch</h5>
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-users-gear text-petron-red"></i>
+                <h5 class="font-bold text-gray-800">Admin Accounts by Branch</h5>
+            </div>
+            <span class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-extrabold text-gray-700">
+                <i class="fa-solid fa-hashtag text-gray-500"></i>
+                <?= count($admins) ?> total
+            </span>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left min-w-175">
-                <thead class="bg-gray-50 text-xs uppercase font-extrabold text-gray-600 border-b">
+                <thead class="bg-gray-50 text-xs uppercase font-extrabold text-gray-500 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-4 w-24">ID</th>
+                        <th class="px-6 py-4 w-32">Admin ID</th>
                         <th class="px-6 py-4">Username</th>
                         <th class="px-6 py-4">Branch</th>
                         <th class="px-6 py-4">Role</th>
@@ -126,20 +137,42 @@ $admins = $controller->getAdmins();
                 <tbody class="divide-y divide-gray-100">
                     <?php if (count($admins) > 0): ?>
                         <?php foreach ($admins as $admin): ?>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 font-extrabold text-gray-700"><?= (int)$admin['id'] ?></td>
-                                <td class="px-6 py-4 font-bold text-gray-900"><?= htmlspecialchars($admin['username']) ?></td>
-                                <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($admin['branch_name']) ?></td>
+                            <?php $adminUid = (string)($admin['admin_uid'] ?? ('ADM-' . str_pad((string)((int)$admin['id']), 6, '0', STR_PAD_LEFT))); ?>
+                            <tr class="odd:bg-white even:bg-gray-50/60 hover:bg-blue-50/50 transition-colors">
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-extrabold">
-                                        Admin
+                                    <span class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 font-black text-xs tracking-wide text-gray-700">
+                                        <i class="fa-solid fa-fingerprint text-petron-blue"></i>
+                                        <?= htmlspecialchars($adminUid) ?>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 text-petron-blue">
+                                            <i class="fa-solid fa-user-shield text-sm"></i>
+                                        </span>
+                                        <div class="leading-tight">
+                                            <p class="font-bold text-gray-900"><?= htmlspecialchars($admin['username']) ?></p>
+                                            <p class="text-xs text-gray-500">Administrator account</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center gap-2 rounded-lg bg-sky-50 px-3 py-1.5 text-sm font-bold text-sky-700">
+                                        <i class="fa-solid fa-building"></i>
+                                        <?= htmlspecialchars($admin['branch_name']) ?>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 text-xs font-extrabold uppercase tracking-wide">
+                                        <span class="inline-block h-2 w-2 rounded-full bg-amber-500"></span>
+                                        Admin Access
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <a
                                         href="app.php?page=admin_accounts&delete_admin_id=<?= (int)$admin['id'] ?>"
                                         onclick="return confirm('Delete this admin account?')"
-                                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold px-5 py-2 shadow"
+                                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 font-extrabold text-red-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-600 hover:text-white hover:border-red-600"
                                     >
                                         <i class="fa-solid fa-trash"></i>
                                         Delete
@@ -149,7 +182,12 @@ $admins = $controller->getAdmins();
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-gray-400 italic">No admin accounts found.</td>
+                            <td colspan="5" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center gap-2 text-gray-400">
+                                    <i class="fa-solid fa-users-slash text-xl"></i>
+                                    <p class="italic">No admin accounts found.</p>
+                                </div>
+                            </td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -157,4 +195,3 @@ $admins = $controller->getAdmins();
         </div>
     </div>
 </div>
-

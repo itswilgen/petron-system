@@ -32,8 +32,16 @@ class SuperAdminController {
         }
     }
 
-    private function redirectToAdminAccounts($flag) {
-        header("Location: /petron_system/public/superadmin/app.php?page=admin_accounts&{$flag}=1");
+    private function redirectToAdminAccounts($queryString = '') {
+        $base = "/petron_system/public/superadmin/app.php?page=admin_accounts";
+        if ($queryString !== '') {
+            if (strpos($queryString, '=') === false) {
+                $base .= "&{$queryString}=1";
+            } else {
+                $base .= "&{$queryString}";
+            }
+        }
+        header("Location: {$base}");
         exit;
     }
 
@@ -357,10 +365,14 @@ class SuperAdminController {
         }
 
         $hashed = password_hash($password, PASSWORD_DEFAULT);
-        $ok = $this->user->createUser($username, $hashed, ROLE_ADMIN, $branchId);
+        $created = $this->user->createAdminWithUniqueId($username, $hashed, $branchId);
 
-        if ($ok) {
-            $this->redirectToAdminAccounts('created');
+        if (($created['ok'] ?? false) === true) {
+            $query = http_build_query([
+                'created' => 1,
+                'admin_uid' => (string)($created['admin_uid'] ?? '')
+            ]);
+            $this->redirectToAdminAccounts($query);
         }
 
         return "Failed to create admin account.";

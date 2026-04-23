@@ -30,10 +30,10 @@ class UserController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->ensureSession();
 
-            $username = trim($_POST['username'] ?? '');
+            $loginId = trim((string)($_POST['id_number'] ?? ($_POST['username'] ?? '')));
             $password = $_POST['password'] ?? '';
 
-            $user_data = $this->user->login($username, $password);
+            $user_data = $this->user->login($loginId, $password);
 
             if ($user_data) {
                 $_SESSION['user_id'] = $user_data['id'];
@@ -60,7 +60,7 @@ class UserController {
                 header("Location: /petron_system/public/auth/login.php");
                 exit;
             } else {
-                return "Invalid username or password";
+                return "Invalid ID number or password";
             }
         }
 
@@ -107,10 +107,14 @@ class UserController {
         }
 
         $hashed = password_hash($password, PASSWORD_DEFAULT);
-        $ok = $this->user->createUser($username, $hashed, $requestedRole, $branchId);
+        $created = $this->user->createStaffWithUniqueId($username, $hashed, $branchId);
 
-        if ($ok) {
-            header("Location: /petron_system/public/admin/app.php?page=staff_manage&created=1");
+        if (($created['ok'] ?? false) === true) {
+            $query = http_build_query([
+                'created' => 1,
+                'staff_uid' => (string)($created['staff_uid'] ?? '')
+            ]);
+            header("Location: /petron_system/public/admin/app.php?page=staff_manage&{$query}");
             exit;
         }
 

@@ -6,24 +6,137 @@ require_once __DIR__ . '/../includes/auth_roles.php';
 class User {
     private $conn;
     private $table_name = "users";
+    private $hasAdminUidColumn = null;
+    private $hasStaffUidColumn = null;
 
     public function __construct() {
         $database = new Database();
         $this->conn = $database->getConnection();
     }
 
-    // Login with branch info
-    public function login($username, $password) {
-        $query = "
-            SELECT u.*, b.branch_name
-            FROM users u
-            JOIN branches b ON u.branch_id = b.id
-            WHERE u.username = ?
-            LIMIT 1
-        ";
+    private function hasAdminUidColumn() {
+        if ($this->hasAdminUidColumn !== null) {
+            return $this->hasAdminUidColumn;
+        }
+
+        $stmt = $this->conn->prepare("SHOW COLUMNS FROM {$this->table_name} LIKE 'admin_uid'");
+        $stmt->execute();
+        $this->hasAdminUidColumn = (bool)$stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->hasAdminUidColumn;
+    }
+
+    private function hasStaffUidColumn() {
+        if ($this->hasStaffUidColumn !== null) {
+            return $this->hasStaffUidColumn;
+        }
+
+        $stmt = $this->conn->prepare("SHOW COLUMNS FROM {$this->table_name} LIKE 'staff_uid'");
+        $stmt->execute();
+        $this->hasStaffUidColumn = (bool)$stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->hasStaffUidColumn;
+    }
+
+    private function buildAdminUidFromId($userId) {
+        return 'ADM-' . str_pad((string)((int)$userId), 6, '0', STR_PAD_LEFT);
+    }
+
+    private function buildStaffUidFromId($userId) {
+        return 'STF-' . str_pad((string)((int)$userId), 6, '0', STR_PAD_LEFT);
+    }
+
+    private function insertUserRecord($username, $hashedPassword, $role, $branch_id) {
+        $columns = ['username', 'password', 'role', 'branch_id'];
+        $placeholders = [':username', ':password', ':role', ':branch_id'];
+        $params = [
+            ':username' => $username,
+            ':password' => $hashedPassword,
+            ':role' => $role,
+            ':branch_id' => $branch_id
+        ];
+
+        if ($this->hasAdminUidColumn()) {
+            $columns[] = 'admin_uid';
+            $placeholders[] = ':admin_uid';
+            $params[':admin_uid'] = null;
+        }
+
+        if ($this->hasStaffUidColumn()) {
+            $columns[] = 'staff_uid';
+            $placeholders[] = ':staff_uid';
+            $params[':staff_uid'] = null;
+        }
+
+        $query = "INSERT INTO " . $this->table_name .
+                 " (" . implode(', ', $columns) . ") " .
+                 "VALUES (" . implode(', ', $placeholders) . ")";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->execute([$username]);
+        $stmt->execute($params);
+
+        return (int)$this->conn->lastInsertId();
+    }
+
+    // Login with branch info using account ID number
+    public function login($loginIdentifier, $password) {
+        $identifier = trim((string)$loginIdentifier);
+        if ($identifier === '') {
+            return false;
+        }
+
+        if ($this->hasAdminUidColumn() && $this->hasStaffUidColumn()) {
+            $query = "
+                SELECT u.*, b.branch_name
+                FROM users u
+                JOIN branches b ON u.branch_id = b.id
+                WHERE (
+                    u.admin_uid = :identifier_admin
+                    OR u.staff_uid = :identifier_staff
+                    OR CAST(u.id AS CHAR) = :identifier_id
+                )
+                LIMIT 1
+            ";
+            $params = [
+                ':identifier_admin' => $identifier,
+                ':identifier_staff' => $identifier,
+                ':identifier_id' => $identifier
+            ];
+        } elseif ($this->hasAdminUidColumn()) {
+            $query = "
+                SELECT u.*, b.branch_name
+                FROM users u
+                JOIN branches b ON u.branch_id = b.id
+                WHERE (u.admin_uid = :identifier_uid OR CAST(u.id AS CHAR) = :identifier_id)
+                LIMIT 1
+            ";
+            $params = [
+                ':identifier_uid' => $identifier,
+                ':identifier_id' => $identifier
+            ];
+        } elseif ($this->hasStaffUidColumn()) {
+            $query = "
+                SELECT u.*, b.branch_name
+                FROM users u
+                JOIN branches b ON u.branch_id = b.id
+                WHERE (u.staff_uid = :identifier_uid OR CAST(u.id AS CHAR) = :identifier_id)
+                LIMIT 1
+            ";
+            $params = [
+                ':identifier_uid' => $identifier,
+                ':identifier_id' => $identifier
+            ];
+        } else {
+            $query = "
+                SELECT u.*, b.branch_name
+                FROM users u
+                JOIN branches b ON u.branch_id = b.id
+                WHERE CAST(u.id AS CHAR) = :identifier
+                LIMIT 1
+            ";
+            $params = [':identifier' => $identifier];
+        }
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password'])) {
@@ -35,16 +148,92 @@ class User {
 
     // Create user with branch
     public function createUser($username, $hashedPassword, $role = ROLE_STAFF, $branch_id = 1) {
-        $query = "INSERT INTO " . $this->table_name . " (username, password, role, branch_id)
-                  VALUES (:username, :password, :role, :branch_id)";
-        $stmt = $this->conn->prepare($query);
+        try {
+            $this->insertUserRecord($username, $hashedPassword, $role, $branch_id);
+            return true;
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
 
-        return $stmt->execute([
-            ':username' => $username,
-            ':password' => $hashedPassword,
-            ':role' => $role,
-            ':branch_id' => $branch_id
-        ]);
+    public function createAdminWithUniqueId($username, $hashedPassword, $branch_id) {
+        $this->conn->beginTransaction();
+
+        try {
+            $newId = $this->insertUserRecord($username, $hashedPassword, ROLE_ADMIN, $branch_id);
+            $adminUid = $this->buildAdminUidFromId($newId);
+
+            if ($this->hasAdminUidColumn()) {
+                $update = $this->conn->prepare("
+                    UPDATE {$this->table_name}
+                    SET admin_uid = :admin_uid
+                    WHERE id = :id
+                    LIMIT 1
+                ");
+                $update->execute([
+                    ':admin_uid' => $adminUid,
+                    ':id' => $newId
+                ]);
+            }
+
+            $this->conn->commit();
+
+            return [
+                'ok' => true,
+                'id' => $newId,
+                'admin_uid' => $adminUid
+            ];
+        } catch (Throwable $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+
+            return [
+                'ok' => false,
+                'id' => 0,
+                'admin_uid' => null
+            ];
+        }
+    }
+
+    public function createStaffWithUniqueId($username, $hashedPassword, $branch_id) {
+        $this->conn->beginTransaction();
+
+        try {
+            $newId = $this->insertUserRecord($username, $hashedPassword, ROLE_STAFF, $branch_id);
+            $staffUid = $this->buildStaffUidFromId($newId);
+
+            if ($this->hasStaffUidColumn()) {
+                $update = $this->conn->prepare("
+                    UPDATE {$this->table_name}
+                    SET staff_uid = :staff_uid
+                    WHERE id = :id
+                    LIMIT 1
+                ");
+                $update->execute([
+                    ':staff_uid' => $staffUid,
+                    ':id' => $newId
+                ]);
+            }
+
+            $this->conn->commit();
+
+            return [
+                'ok' => true,
+                'id' => $newId,
+                'staff_uid' => $staffUid
+            ];
+        } catch (Throwable $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+
+            return [
+                'ok' => false,
+                'id' => 0,
+                'staff_uid' => null
+            ];
+        }
     }
 
     // Check if username exists
@@ -57,10 +246,18 @@ class User {
 
     // Get staff users by branch
     public function getStaffUsers($branch_id) {
-        $query = "SELECT id, username, role, branch_id
-                  FROM " . $this->table_name . "
-                  WHERE role = :role AND branch_id = :branch_id
-                  ORDER BY id DESC";
+        if ($this->hasStaffUidColumn()) {
+            $query = "SELECT id, staff_uid, username, role, branch_id
+                      FROM " . $this->table_name . "
+                      WHERE role = :role AND branch_id = :branch_id
+                      ORDER BY id DESC";
+        } else {
+            $query = "SELECT id, CONCAT('STF-', LPAD(id, 6, '0')) AS staff_uid, username, role, branch_id
+                      FROM " . $this->table_name . "
+                      WHERE role = :role AND branch_id = :branch_id
+                      ORDER BY id DESC";
+        }
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute([
             ':role' => ROLE_STAFF,
@@ -89,11 +286,31 @@ class User {
     }
 
     public function getAdminsAllBranches() {
-        $query = "SELECT u.id, u.username, u.role, u.branch_id, b.branch_name
-                  FROM " . $this->table_name . " u
-                  JOIN branches b ON b.id = u.branch_id
-                  WHERE u.role = :role
-                  ORDER BY u.branch_id ASC, u.id DESC";
+        if ($this->hasAdminUidColumn()) {
+            $query = "SELECT
+                        u.id,
+                        u.admin_uid,
+                        u.username,
+                        u.role,
+                        u.branch_id,
+                        b.branch_name
+                      FROM " . $this->table_name . " u
+                      JOIN branches b ON b.id = u.branch_id
+                      WHERE u.role = :role
+                      ORDER BY u.branch_id ASC, u.id DESC";
+        } else {
+            $query = "SELECT
+                        u.id,
+                        CONCAT('ADM-', LPAD(u.id, 6, '0')) AS admin_uid,
+                        u.username,
+                        u.role,
+                        u.branch_id,
+                        b.branch_name
+                      FROM " . $this->table_name . " u
+                      JOIN branches b ON b.id = u.branch_id
+                      WHERE u.role = :role
+                      ORDER BY u.branch_id ASC, u.id DESC";
+        }
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute([
