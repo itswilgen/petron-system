@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../../includes/guards/superadmin_guard.php';
 
 $page = $_GET['page'] ?? 'dashboard';
-$allowedPages = ['dashboard', 'branch_operations', 'business_health', 'global_pricing', 'admin_accounts'];
+$allowedPages = ['dashboard', 'branch_operations', 'business_health', 'global_pricing', 'admin_accounts', 'policies'];
 
 if (!in_array($page, $allowedPages, true)) {
     $page = 'dashboard';
@@ -24,6 +24,7 @@ if (!in_array($page, $allowedPages, true)) {
 
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="/petron_system/public/assets/css/output.css?v=<?= filemtime(__DIR__ . '/../assets/css/output.css') ?>">
+    <link rel="stylesheet" href="/petron_system/public/assets/css/browser-compat.css?v=<?= filemtime(__DIR__ . '/../assets/css/browser-compat.css') ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
@@ -64,7 +65,7 @@ if (!in_array($page, $allowedPages, true)) {
 
                 <a href="app.php?page=business_health" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('business_health', $currentPage) ?>">
                     <i class="fa-solid fa-heart-pulse w-6"></i>
-                    <span class="ml-2">Business Health</span>
+                    <span class="ml-2">Business Monitoring</span>
                 </a>
 
                 <a href="app.php?page=global_pricing" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('global_pricing', $currentPage) ?>">
@@ -75,6 +76,11 @@ if (!in_array($page, $allowedPages, true)) {
                 <a href="app.php?page=admin_accounts" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('admin_accounts', $currentPage) ?>">
                     <i class="fa-solid fa-user-shield w-6"></i>
                     <span class="ml-2">Admin Accounts</span>
+                </a>
+
+                <a href="app.php?page=policies" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('policies', $currentPage) ?>">
+                    <i class="fa-solid fa-file-contract w-6"></i>
+                    <span class="ml-2">Policies</span>
                 </a>
             </div>
 
@@ -92,6 +98,9 @@ if (!in_array($page, $allowedPages, true)) {
                 Regional Command Node
             </div>
             <p class="mt-1 text-white/75">Super Admin operations control across all branches.</p>
+            <p class="mt-3 border-t border-white/20 pt-3 text-[10px] leading-4 text-white/80">
+                Matthew 16:18 - "And I tell you that you are Peter, and on this rock I will build my church, and the gates of Hades will not overcome it."
+            </p>
         </div>
     </aside>
 

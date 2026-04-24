@@ -51,10 +51,10 @@ $hasMore      = $viewData['hasMore'];
     </div>
 
     <div class="p-6">
-      <form method="POST" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <form method="POST" class="flex flex-col lg:flex-row lg:items-end gap-3">
 
         <!-- Fuel -->
-        <div class="md:col-span-6">
+        <div class="lg:flex-[1.8]">
           <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Fuel Type</label>
           <select name="fuel_id" class="w-full rounded-xl border border-gray-300 px-4 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-petron-blue/30" required>
             <option value="">Select Fuel</option>
@@ -76,7 +76,7 @@ $hasMore      = $viewData['hasMore'];
         </div>
 
         <!-- Liters Added -->
-        <div class="md:col-span-4">
+        <div class="lg:flex-1">
           <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Liters Added</label>
           <input
             type="number"
@@ -89,7 +89,8 @@ $hasMore      = $viewData['hasMore'];
         </div>
 
         <!-- Button -->
-        <div class="md:col-span-2 flex items-end">
+        <div class="lg:w-44 lg:flex-shrink-0">
+          <label class="hidden lg:block text-xs font-bold text-transparent uppercase mb-2 select-none">Add</label>
           <button
             type="submit"
             name="add_delivery"

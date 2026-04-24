@@ -34,8 +34,8 @@ $dateTo = $viewData['dateTo'];
     <form method="GET" action="app.php" class="bg-white rounded-2xl shadow border border-gray-100 p-5">
         <input type="hidden" name="page" value="sales_history">
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            <div class="md:col-span-4">
+        <div class="flex flex-col lg:flex-row lg:items-end gap-3">
+            <div class="lg:flex-[1.6]">
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Search Fuel</label>
                 <input
                     type="text"
@@ -46,7 +46,7 @@ $dateTo = $viewData['dateTo'];
                 >
             </div>
 
-            <div class="md:col-span-4">
+            <div class="lg:flex-1">
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Date From</label>
                 <input
                     type="date"
@@ -56,7 +56,7 @@ $dateTo = $viewData['dateTo'];
                 >
             </div>
 
-            <div class="md:col-span-2">
+            <div class="lg:flex-1">
                 <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Date To</label>
                 <input
                     type="date"
@@ -66,7 +66,8 @@ $dateTo = $viewData['dateTo'];
                 >
             </div>
 
-            <div class="md:col-span-2">
+            <div class="lg:w-14 lg:flex-shrink-0">
+                <label class="hidden lg:block text-xs font-bold text-transparent uppercase mb-2 select-none">Go</label>
                 <button
                     type="submit"
                     class="w-full rounded-xl bg-red-600 text-white font-extrabold px-4 py-3 shadow hover:opacity-95"

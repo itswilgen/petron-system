@@ -61,9 +61,9 @@ $admins = $controller->getAdmins();
             <h5 class="font-bold text-gray-800">Create Admin Account</h5>
         </div>
         <div class="p-6">
-            <form method="POST" class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div class="md:col-span-4">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Username</label>
+            <form method="POST" class="flex flex-col lg:flex-row lg:items-end gap-3">
+                <div class="lg:flex-[1.15]">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1.5">Username</label>
                     <input
                         type="text"
                         name="username"
@@ -72,19 +72,18 @@ $admins = $controller->getAdmins();
                     >
                 </div>
 
-                <div class="md:col-span-4">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Password</label>
+                <div class="lg:flex-[1.15]">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1.5">Password</label>
                     <input
                         type="password"
                         name="password"
                         required
                         class="w-full rounded-xl border border-gray-300 px-4 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-petron-blue/30"
                     >
-                    <p class="text-xs text-gray-400 mt-2 italic">Min 6 characters</p>
                 </div>
 
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Branch</label>
+                <div class="lg:flex-[0.95]">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1.5">Branch</label>
                     <select
                         name="branch_id"
                         required
@@ -97,7 +96,8 @@ $admins = $controller->getAdmins();
                     </select>
                 </div>
 
-                <div class="md:col-span-2 flex items-end">
+                <div class="lg:w-52 lg:flex-shrink-0">
+                    <label class="hidden lg:block text-xs font-bold text-transparent uppercase mb-1.5 select-none">Action</label>
                     <button
                         type="submit"
                         name="create_admin"
@@ -108,6 +108,7 @@ $admins = $controller->getAdmins();
                     </button>
                 </div>
             </form>
+            <p class="text-xs text-gray-400 mt-2 italic">Password minimum: 6 characters.</p>
         </div>
     </div>
 

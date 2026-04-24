@@ -27,7 +27,7 @@ $branchSummary = $data['branchSummary'] ?? [];
 </header>
 
 <div class="p-4 md:p-8 space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6">
         <div class="bg-linear-to-br from-[#1d976c] to-[#93f9b9] p-6 rounded-2xl shadow-lg text-white">
             <p class="text-xs font-bold uppercase opacity-85">Regional Sales Today</p>
             <h2 id="salesTodayValue" class="text-3xl font-black mt-1">₱ <?= number_format($salesToday, 2) ?></h2>
@@ -69,16 +69,6 @@ $branchSummary = $data['branchSummary'] ?? [];
             </div>
             <div class="p-4 md:p-6">
                 <div id="branchPerformanceChart"></div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
-                <i class="fa-solid fa-users text-petron-red"></i>
-                <h5 class="font-bold text-gray-800">Account Mix</h5>
-            </div>
-            <div class="p-4 md:p-6">
-                <div id="accountMixChart"></div>
             </div>
         </div>
     </div>

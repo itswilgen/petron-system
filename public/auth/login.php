@@ -16,6 +16,7 @@ $error = $controller->login();
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Petron Login - Inventory System</title>
   <link rel="stylesheet" href="../../public/assets/css/output.css?v=<?= filemtime(__DIR__ . '/../../public/assets/css/output.css') ?>">
+  <link rel="stylesheet" href="../../public/assets/css/browser-compat.css?v=<?= filemtime(__DIR__ . '/../../public/assets/css/browser-compat.css') ?>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @keyframes bgMotion {
@@ -132,6 +133,10 @@ $error = $controller->login();
 
             <div class="mt-6 text-center text-xs text-gray-500">
               © 2026 Petron Corporation
+            </div>
+
+            <div class="mt-4 border-t border-gray-200 pt-3 text-center text-[11px] leading-5 text-gray-600">
+              Matthew 16:18 - "And I tell you that you are Peter, and on this rock I will build my church, and the gates of Hades will not overcome it."
             </div>
           </div>
 

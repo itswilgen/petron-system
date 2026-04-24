@@ -15,9 +15,15 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "tailwindcss -i ./src/assets/css/input.css -o ./public/assets/css/output.css --watch",
-    "build": "tailwindcss -i ./src/assets/css/input.css -o ./public/assets/css/output.css --minify"
+    "dev": "tailwindcss -i ./public/assets/css/input.css -o ./public/assets/css/output.css --watch",
+    "build": "tailwindcss -i ./public/assets/css/input.css -o ./public/assets/css/output.css --minify"
   },
+  "browserslist": [
+    ">0.5%",
+    "last 2 versions",
+    "not dead",
+    "not op_mini all"
+  ],
   "dependencies": {
     "apexcharts": "^5.10.6",
     "chart.js": "^4.5.1",

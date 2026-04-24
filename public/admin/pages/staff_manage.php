@@ -67,9 +67,9 @@ $staffUsers = $controller->listStaff();
     </div>
 
     <div class="p-6">
-      <form method="POST" class="grid grid-cols-1 md:grid-cols-12 gap-4">
-        <div class="md:col-span-4">
-          <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Username</label>
+      <form method="POST" class="flex flex-col lg:flex-row lg:items-end gap-3">
+        <div class="lg:flex-[1.2]">
+          <label class="block text-xs font-bold text-gray-500 uppercase mb-1.5">Username</label>
           <input
             type="text"
             name="username"
@@ -78,20 +78,20 @@ $staffUsers = $controller->listStaff();
           >
         </div>
 
-        <div class="md:col-span-4">
-          <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Password</label>
+        <div class="lg:flex-[1.2]">
+          <label class="block text-xs font-bold text-gray-500 uppercase mb-1.5">Password</label>
           <input
             type="password"
             name="password"
             class="w-full rounded-xl border border-gray-300 px-4 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-petron-blue/30"
             required
           >
-          <p class="text-xs text-gray-400 mt-2 italic">Min 6 characters</p>
         </div>
 
         <input type="hidden" name="role" value="staff">
 
-        <div class="md:col-span-2 flex items-end">
+        <div class="lg:w-52 lg:shrink-0">
+          <label class="hidden lg:block text-xs font-bold text-transparent uppercase mb-1.5 select-none">Action</label>
           <button
             type="submit"
             name="create_staff"
@@ -102,6 +102,7 @@ $staffUsers = $controller->listStaff();
           </button>
         </div>
       </form>
+      <p class="text-xs text-gray-400 mt-2 italic">Password minimum: 6 characters.</p>
     </div>
   </div>
 

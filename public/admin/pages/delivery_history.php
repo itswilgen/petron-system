@@ -35,27 +35,28 @@ $dateTo = $viewData['dateTo'];
   <form method="GET" action="app.php" class="bg-white rounded-2xl shadow border border-gray-100 p-5">
     <input type="hidden" name="page" value="delivery_history">
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-      <div class="md:col-span-5">
+    <div class="flex flex-col lg:flex-row lg:items-end gap-3">
+      <div class="lg:flex-[1.6]">
         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Search Fuel</label>
         <input type="text" name="q" value="<?= htmlspecialchars($search) ?>"
                placeholder="e.g., Diesel"
                class="w-full rounded-xl border border-gray-300 px-4 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-petron-blue/30">
       </div>
 
-      <div class="md:col-span-5">
+      <div class="lg:flex-1">
         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Date From</label>
         <input type="date" name="from" value="<?= htmlspecialchars($dateFrom) ?>"
                class="w-full rounded-xl border border-gray-300 px-4 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-petron-blue/30">
       </div>
 
-      <div class="md:col-span-4">
+      <div class="lg:flex-1">
         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Date To</label>
         <input type="date" name="to" value="<?= htmlspecialchars($dateTo) ?>"
                class="w-full rounded-xl border border-gray-300 px-4 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-petron-blue/30">
       </div>
 
-      <div class="md:col-span-1 flex gap-2">
+      <div class="lg:w-14 lg:shrink-shrink-0">
+        <label class="hidden lg:block text-xs font-bold text-transparent uppercase mb-2 select-none">Go</label>
         <button type="submit"
                 class="w-full rounded-xl bg-blue-700 text-white font-extrabold px-4 py-3 shadow hover:opacity-95">
           <i class="fa-solid fa-magnifying-glass"></i>

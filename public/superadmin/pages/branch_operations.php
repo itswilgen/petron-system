@@ -34,7 +34,7 @@ function formatDateParts($value) {
 </header>
 
 <div class="p-4 md:p-8 space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6">
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <p class="text-sm text-gray-500 font-semibold">Branches Monitored</p>
             <h3 id="opsBranchCountValue" class="text-3xl font-black text-petron-blue mt-1"><?= (int)($totals['branch_count'] ?? 0) ?></h3>

@@ -1,0 +1,107 @@
+/*
+ * Cross-browser fallback layer
+ * Purpose: keep visual output consistent across Chrome, Firefox, Brave, Safari.
+ */
+
+:root {
+  /* Hex fallbacks for engines with partial oklch support */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-200: #fecaca;
+  --color-red-300: #fca5a5;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
+  --color-amber-100: #fef3c7;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-700: #b45309;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Keep viewport heights stable on Safari/Firefox mobile toolbars */
+.h-screen {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Backdrop blur parity */
+.backdrop-blur-sm {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.backdrop-blur-md {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .backdrop-blur-sm,
+  .backdrop-blur-md {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* Opacity utility fallbacks (for older color-mix implementations) */
+.bg-white\/95 { background-color: rgba(255, 255, 255, 0.95) !important; }
+.bg-white\/80 { background-color: rgba(255, 255, 255, 0.80) !important; }
+.bg-white\/20 { background-color: rgba(255, 255, 255, 0.20) !important; }
+.bg-white\/10 { background-color: rgba(255, 255, 255, 0.10) !important; }
+.bg-black\/40 { background-color: rgba(0, 0, 0, 0.40) !important; }
+.bg-black\/30 { background-color: rgba(0, 0, 0, 0.30) !important; }
+.bg-gray-50\/80 { background-color: rgba(249, 250, 251, 0.80) !important; }
+.bg-gray-50\/60 { background-color: rgba(249, 250, 251, 0.60) !important; }
+.bg-blue-50\/50 { background-color: rgba(239, 246, 255, 0.50) !important; }
+
+.text-white\/85 { color: rgba(255, 255, 255, 0.85) !important; }
+.text-white\/80 { color: rgba(255, 255, 255, 0.80) !important; }
+.text-white\/75 { color: rgba(255, 255, 255, 0.75) !important; }
+.text-white\/70 { color: rgba(255, 255, 255, 0.70) !important; }
+.text-white\/20 { color: rgba(255, 255, 255, 0.20) !important; }
+
+.border-white\/20 { border-color: rgba(255, 255, 255, 0.20) !important; }
+.border-white\/15 { border-color: rgba(255, 255, 255, 0.15) !important; }
+.border-white\/10 { border-color: rgba(255, 255, 255, 0.10) !important; }
+
+.ring-red-500\/20 { --tw-ring-color: rgba(239, 68, 68, 0.20) !important; }
+.ring-petron-blue\/30 { --tw-ring-color: rgba(11, 74, 122, 0.30) !important; }
+.shadow-red-500\/20 { --tw-shadow-color: rgba(239, 68, 68, 0.20) !important; }
+
