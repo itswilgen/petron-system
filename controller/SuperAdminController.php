@@ -84,6 +84,25 @@ class SuperAdminController {
         return $trend;
     }
 
+    private function normalizeOperatingDate($value) {
+        $value = trim((string)$value);
+
+        if ($value !== '') {
+            $date = DateTime::createFromFormat('Y-m-d', $value);
+            $errors = DateTime::getLastErrors();
+
+            if (
+                $date instanceof DateTime
+                && ($errors === false || (($errors['warning_count'] ?? 0) === 0 && ($errors['error_count'] ?? 0) === 0))
+                && $date->format('Y-m-d') === $value
+            ) {
+                return $value;
+            }
+        }
+
+        return date('Y-m-d');
+    }
+
     public function getDashboardData() {
         $this->ensureSuperAdmin();
 
@@ -126,6 +145,34 @@ class SuperAdminController {
         return [
             'rows' => $rows,
             'totals' => $totals
+        ];
+    }
+
+    public function getGlobalRecentSalesData($dateValue = null) {
+        $this->ensureSuperAdmin();
+
+        $operatingDate = $this->normalizeOperatingDate($dateValue ?? ($_GET['date'] ?? ''));
+        $summary = $this->dashboard->getGlobalRecentSalesSummary($operatingDate) ?: [];
+        $branchRows = $this->dashboard->getGlobalRecentSalesByBranch($operatingDate);
+        $fuelRows = $this->dashboard->getGlobalRecentSalesByFuel($operatingDate, 8);
+        $recentSales = $this->dashboard->getGlobalRecentSales($operatingDate, 50);
+        $branchCount = count($branchRows);
+
+        return [
+            'operatingDate' => $operatingDate,
+            'isToday' => $operatingDate === date('Y-m-d'),
+            'summary' => [
+                'total_sales' => (float)($summary['total_sales'] ?? 0),
+                'total_liters' => (float)($summary['total_liters'] ?? 0),
+                'transaction_count' => (int)($summary['transaction_count'] ?? 0),
+                'active_branch_count' => (int)($summary['active_branch_count'] ?? 0),
+                'branch_count' => $branchCount,
+                'average_ticket' => (float)($summary['average_ticket'] ?? 0),
+                'latest_sale_at' => $summary['latest_sale_at'] ?? null
+            ],
+            'recentSales' => $recentSales,
+            'branchRows' => $branchRows,
+            'fuelRows' => $fuelRows
         ];
     }
 

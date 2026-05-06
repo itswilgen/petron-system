@@ -247,6 +247,97 @@ class Dashboard {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getGlobalRecentSalesSummary($saleDate) {
+        $stmt = $this->conn->prepare("
+            SELECT
+                COALESCE(SUM(total_price), 0) AS total_sales,
+                COALESCE(SUM(liters), 0) AS total_liters,
+                COUNT(*) AS transaction_count,
+                COUNT(DISTINCT branch_id) AS active_branch_count,
+                COALESCE(SUM(total_price) / NULLIF(COUNT(*), 0), 0) AS average_ticket,
+                MAX(sale_date) AS latest_sale_at
+            FROM sales
+            WHERE DATE(sale_date) = :sale_date
+        ");
+        $stmt->execute([
+            ':sale_date' => $saleDate
+        ]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getGlobalRecentSales($saleDate, $limit = 50) {
+        $limit = max(1, min(200, (int)$limit));
+
+        $stmt = $this->conn->prepare("
+            SELECT
+                s.id,
+                s.fuel_id,
+                s.liters,
+                s.price,
+                s.total_price,
+                s.sale_date,
+                b.id AS branch_id,
+                b.branch_name,
+                b.location,
+                f.fuel_name
+            FROM sales s
+            JOIN branches b ON b.id = s.branch_id
+            JOIN fuels f ON f.id = s.fuel_id
+            WHERE DATE(s.sale_date) = :sale_date
+            ORDER BY s.sale_date DESC, s.id DESC
+            LIMIT {$limit}
+        ");
+        $stmt->execute([
+            ':sale_date' => $saleDate
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getGlobalRecentSalesByBranch($saleDate) {
+        $stmt = $this->conn->prepare("
+            SELECT
+                b.id AS branch_id,
+                b.branch_name,
+                b.location,
+                COALESCE(COUNT(s.id), 0) AS transaction_count,
+                COALESCE(SUM(s.total_price), 0) AS total_sales,
+                COALESCE(SUM(s.liters), 0) AS total_liters,
+                MAX(s.sale_date) AS latest_sale_at
+            FROM branches b
+            LEFT JOIN sales s
+                ON s.branch_id = b.id
+               AND DATE(s.sale_date) = :sale_date
+            GROUP BY b.id, b.branch_name, b.location
+            ORDER BY total_sales DESC, transaction_count DESC, b.branch_name ASC
+        ");
+        $stmt->execute([
+            ':sale_date' => $saleDate
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getGlobalRecentSalesByFuel($saleDate, $limit = 8) {
+        $limit = max(1, min(50, (int)$limit));
+
+        $stmt = $this->conn->prepare("
+            SELECT
+                f.fuel_name,
+                COUNT(*) AS transaction_count,
+                COALESCE(SUM(s.liters), 0) AS total_liters,
+                COALESCE(SUM(s.total_price), 0) AS total_sales
+            FROM sales s
+            JOIN fuels f ON f.id = s.fuel_id
+            WHERE DATE(s.sale_date) = :sale_date
+            GROUP BY f.fuel_name
+            ORDER BY total_sales DESC, transaction_count DESC, f.fuel_name ASC
+            LIMIT {$limit}
+        ");
+        $stmt->execute([
+            ':sale_date' => $saleDate
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getBranchBusinessHealthAllBranches() {
         $stmt = $this->conn->prepare("
             SELECT

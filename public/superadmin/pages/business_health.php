@@ -16,7 +16,7 @@ $trendPositive = $trendAmount >= 0;
 <header class="bg-white py-4 px-4 md:px-8 shadow-sm flex justify-between items-center">
     <div>
         <h4 class="text-xl font-extrabold text-petron-blue uppercase tracking-tight">BUSINESS HEALTH</h4>
-        <p class="text-sm text-gray-500 font-medium">Profit/Loss trend and operational health by branch (auto-updates every 5 seconds)</p>
+        <p class="text-sm text-gray-500 font-medium">Profit/Loss trend and operational health by branch</p>
     </div>
     <div class="hidden md:flex items-center gap-3 text-gray-500 font-semibold bg-gray-50 px-4 py-2 rounded-full border border-gray-100 shadow-inner">
         <i class="fa-solid fa-calendar-day text-petron-red"></i>

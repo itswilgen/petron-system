@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../../includes/guards/superadmin_guard.php';
 
 $page = $_GET['page'] ?? 'dashboard';
-$allowedPages = ['dashboard', 'branch_operations', 'business_health', 'global_pricing', 'admin_accounts', 'policies'];
+$allowedPages = ['dashboard', 'branch_operations', 'global_recent_sales', 'business_health', 'global_pricing', 'admin_accounts', 'policies'];
 
 if (!in_array($page, $allowedPages, true)) {
     $page = 'dashboard';
@@ -61,6 +61,11 @@ if (!in_array($page, $allowedPages, true)) {
                 <a href="app.php?page=branch_operations" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('branch_operations', $currentPage) ?>">
                     <i class="fa-solid fa-network-wired w-6"></i>
                     <span class="ml-2">Branch Operations</span>
+                </a>
+
+                <a href="app.php?page=global_recent_sales" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('global_recent_sales', $currentPage) ?>">
+                    <i class="fa-solid fa-receipt w-6"></i>
+                    <span class="ml-2">Global Recent Sales</span>
                 </a>
 
                 <a href="app.php?page=business_health" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 <?= getSuperAdminActiveClass('business_health', $currentPage) ?>">

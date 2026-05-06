@@ -309,7 +309,7 @@ if (posForm) {
         formData.append("pay", "1");
 
         try {
-            const response = await fetch('/petron_system/public/staff/ajax/process_sale.php', {
+            const response = await fetch('/petron_system/public/staff/ajax/process_sale', {
                 method: 'POST',
                 body: formData
             });
