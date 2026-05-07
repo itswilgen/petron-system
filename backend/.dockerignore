@@ -1,0 +1,13 @@
+.git
+.gitignore
+.DS_Store
+Dockerfile
+docker-compose.yml
+railway.json
+/node_modules/
+/vendor/
+.env
+.env.*
+npm-debug.log
+yarn-error.log
+README.md
