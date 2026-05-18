@@ -39,6 +39,8 @@ class Database {
             $this->conn = new PDO($dsn, $this->username, $this->password, $options);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $exception) {
+            error_log("Database connection failed: " . $exception->getMessage());
+
             die(json_encode([
                 "success" => false,
                 "message" => "Database connection failed"
